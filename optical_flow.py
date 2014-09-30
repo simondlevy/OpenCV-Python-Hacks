@@ -35,7 +35,7 @@ class OpticalFlowCalculator:
     A class for optical flow calculations using OpenCV
     '''
     
-    def __init__(self, frame_width, frame_height, perspective_angle=0, mv_step=16, window_name=None):
+    def __init__(self, frame_width, frame_height, perspective_angle=0, mv_step=16, window_name=None, flow_color_rgb=(0,255,0)):
         '''
         Creates an OpticalFlow object for images with specified width and height.
 
@@ -44,10 +44,11 @@ class OpticalFlowCalculator:
           perspective_angle - perspective angle of camera, for reporting flow in meters per second
           mv_step           - step size in pixels for sampling the flow image
           window_name       - window name for display
+          flow_color_rgb    - color for displaying flow
         '''
 
         self.mv_step = mv_step
-        self.mv_color = (0, 255, 0)
+        self.mv_color_bgr = (flow_color_rgb[2], flow_color_rgb[1], flow_color_rgb[0])
 
         self.perspective_angle = perspective_angle
 
@@ -111,8 +112,8 @@ class OpticalFlowCalculator:
                 xsum += fx
                 ysum += fy
 
-                cv.Line(frame, (x,y), (int(x+fx),int(y+fy)), self.mv_color)
-                cv.Circle(frame, (x,y), 1, self.mv_color, -1)
+                cv.Line(frame, (x,y), (int(x+fx),int(y+fy)), self.mv_color_bgr)
+                cv.Circle(frame, (x,y), 1, self.mv_color_bgr, -1)
 
         if self.window_name:
             cv.ShowImage(self.window_name, frame)
