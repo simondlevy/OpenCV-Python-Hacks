@@ -164,6 +164,9 @@ if __name__=="__main__":
     while True:
 
         frame = cv.QueryFrame(capture)
+        
+        if not frame:
+            break
 
         count += 1
             
