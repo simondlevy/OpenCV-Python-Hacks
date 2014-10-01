@@ -117,7 +117,7 @@ class OpticalFlowCalculator:
 
         if self.window_name:
             cv.ShowImage(self.window_name, frame)
-            if cv.WaitKey(1) == 27:
+            if cv.WaitKey(1) & 0x000000FF== 27: # ESC
                 return None
 
         self.prev_gray, self.gray = self.gray, self.prev_gray        
