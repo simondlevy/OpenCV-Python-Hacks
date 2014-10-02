@@ -5,8 +5,10 @@ optical_flow.py - Optical-flow velocity calculation and display using OpenCV
 
     To test:
 
-      % optical_flow            # video from webcam
-      % optical_flow FILENAME   # video from file
+      % optical_flow               # video from webcam
+      % optical_flow -f FILENAME   # video from file
+      % optical_flow -c CAMERA     # specific camera number
+      % optical_flow -s N          # scale down capture by 2^N
 
     Adapted from 
  
@@ -26,9 +28,9 @@ optical_flow.py - Optical-flow velocity calculation and display using OpenCV
 '''
 
 import cv
-import sys
 import time
 import math
+import optparse
 
 class OpticalFlowCalculator:
     '''
@@ -60,11 +62,13 @@ class OpticalFlowCalculator:
         size = (frame_width, frame_height)
 
         self.bgrbytes = bytearray(frame_width*frame_height * 3)
-        self.image = cv.CreateImageHeader(size, cv.IPL_DEPTH_8U, 3)
+        self.image = cv.CreateImage(size, cv.IPL_DEPTH_8U, 3)
 
         self.gray = cv.CreateImage(size, 8, 1)
-        self.prev_gray = cv.CreateImage(size, 8, 1)
+
+
         self.flow = cv.CreateImage(size, 32, 2)
+        self.prev_gray = cv.CreateImage(size, 8, 1)
 
         self.frame_width = frame_width
 
@@ -99,7 +103,7 @@ class OpticalFlowCalculator:
         '''
 
         cv.CvtColor(frame, self.gray, cv.CV_BGR2GRAY)
-            
+
         cv.CalcOpticalFlowFarneback(self.prev_gray, self.gray, self.flow)
 
         xsum, ysum = 0,0
@@ -152,24 +156,42 @@ class OpticalFlowCalculator:
 
 if __name__=="__main__":
 
-    capture = cv.CaptureFromCAM(0) if len(sys.argv) < 2 else cv.CaptureFromFile(sys.argv[1])
+    parser = optparse.OptionParser()
 
-    flow = OpticalFlowCalculator(int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_WIDTH)), 
-                          int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT)),
-                          window_name='Optical Flow')
+    parser.add_option("-f", "--file",  dest="filename", help="Read from video file", metavar="FILE")
+    parser.add_option("-s", "--scaledown", dest="scaledown", help="Fractional image scaling", metavar="SCALEDOWN")
+    parser.add_option("-c", "--camera", dest="camera", help="Camera number", metavar="CAMERA")
 
+    (options, _) = parser.parse_args()
+
+    camno = int(options.camera) if options.camera else 0
+
+    capture = cv.CaptureFromCAM(camno) if not options.filename else cv.CaptureFromFile(options.filename)
+
+    width   = int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_WIDTH))
+    height  = int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT))
+
+    scaledown = int(options.scaledown) if options.scaledown else 0
+
+    width  >>= scaledown
+    height >>= scaledown
+
+    cv.SetCaptureProperty( capture, cv.CV_CAP_PROP_FRAME_WIDTH, width );
+    cv.SetCaptureProperty( capture, cv.CV_CAP_PROP_FRAME_HEIGHT, height );
+
+    flow = OpticalFlowCalculator(width, height, window_name='Optical Flow') 
     start_sec = time.time()
     count = 0
 
     while True:
 
         frame = cv.QueryFrame(capture)
-        
-        if not frame:
-            break
 
         count += 1
             
+        if not frame:
+            break
+
         result = flow.processFrame(frame)
 
         if not result:
@@ -177,4 +199,5 @@ if __name__=="__main__":
 
     elapsed_sec = time.time() - start_sec
 
-    print('%d frames in %3.3f sec = %3.3f frames / sec' % (count, elapsed_sec, count/elapsed_sec))
+    print('%dx%d image: %d frames in %3.3f sec = %3.3f frames / sec' % 
+             (width, height, count, elapsed_sec, count/elapsed_sec))
