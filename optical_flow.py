@@ -8,7 +8,7 @@ optical_flow.py - Optical-flow velocity calculation and display using OpenCV
       % optical_flow               # video from webcam
       % optical_flow -f FILENAME   # video from file
       % optical_flow -c CAMERA     # specific camera number
-      % optical_flow -s N          # scale down capture by 2^N
+      % optical_flow -s N          # scale-down factor for flow image
       % optical_flow -m M          # move step in pixels
 
     Adapted from 
@@ -38,7 +38,7 @@ class OpticalFlowCalculator:
     A class for optical flow calculations using OpenCV
     '''
     
-    def __init__(self, frame_width, frame_height, scaledown=0,
+    def __init__(self, frame_width, frame_height, scaledown=1,
                  perspective_angle=0, move_step=16, window_name=None, flow_color_rgb=(0,255,0)):
         '''
         Creates an OpticalFlow object for images with specified width and height.
@@ -66,7 +66,10 @@ class OpticalFlowCalculator:
         self.bgrbytes = bytearray(frame_width*frame_height * 3)
         self.image = cv.CreateImage(size, cv.IPL_DEPTH_8U, 3)
 
-        size = (frame_width>>scaledown, frame_height>>scaledown)
+        frame_width  = int(frame_width/scaledown)
+        frame_height = int(frame_height/scaledown)
+
+        size = (frame_width, frame_height)
         self.frame2 = cv.CreateImage(size, cv.IPL_DEPTH_8U, 3)
 
         self.gray = cv.CreateImage(size, 8, 1)
@@ -177,7 +180,7 @@ if __name__=="__main__":
     width   = int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_WIDTH))
     height  = int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT))
 
-    scaledown = int(options.scaledown) if options.scaledown else 0
+    scaledown = int(options.scaledown) if options.scaledown else 1
 
     movestep = int(options.movestep) if options.movestep else 16
 
@@ -202,4 +205,4 @@ if __name__=="__main__":
     elapsed_sec = time.time() - start_sec
 
     print('%dx%d image: %d frames in %3.3f sec = %3.3f frames / sec' % 
-             (width, height, count, elapsed_sec, count/elapsed_sec))
+             (flow.frame2.width, flow.frame2.height, count, elapsed_sec, count/elapsed_sec))
