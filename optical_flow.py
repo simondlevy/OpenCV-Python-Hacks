@@ -9,6 +9,7 @@ optical_flow.py - Optical-flow velocity calculation and display using OpenCV
       % optical_flow -f FILENAME   # video from file
       % optical_flow -c CAMERA     # specific camera number
       % optical_flow -s N          # scale down capture by 2^N
+      % optical_flow -m M          # move step in pixels
 
     Adapted from 
  
@@ -37,19 +38,20 @@ class OpticalFlowCalculator:
     A class for optical flow calculations using OpenCV
     '''
     
-    def __init__(self, frame_width, frame_height, perspective_angle=0, mv_step=16, window_name=None, flow_color_rgb=(0,255,0)):
+    def __init__(self, frame_width, frame_height, scaledown=0,
+                 perspective_angle=0, move_step=16, window_name=None, flow_color_rgb=(0,255,0)):
         '''
         Creates an OpticalFlow object for images with specified width and height.
 
         Optional inputs are:
 
           perspective_angle - perspective angle of camera, for reporting flow in meters per second
-          mv_step           - step size in pixels for sampling the flow image
+          move_step           - step size in pixels for sampling the flow image
           window_name       - window name for display
           flow_color_rgb    - color for displaying flow
         '''
 
-        self.mv_step = mv_step
+        self.move_step = move_step
         self.mv_color_bgr = (flow_color_rgb[2], flow_color_rgb[1], flow_color_rgb[0])
 
         self.perspective_angle = perspective_angle
@@ -64,9 +66,10 @@ class OpticalFlowCalculator:
         self.bgrbytes = bytearray(frame_width*frame_height * 3)
         self.image = cv.CreateImage(size, cv.IPL_DEPTH_8U, 3)
 
+        size = (frame_width>>scaledown, frame_height>>scaledown)
+        self.frame2 = cv.CreateImage(size, cv.IPL_DEPTH_8U, 3)
+
         self.gray = cv.CreateImage(size, 8, 1)
-
-
         self.flow = cv.CreateImage(size, 32, 2)
         self.prev_gray = cv.CreateImage(size, 8, 1)
 
@@ -102,25 +105,27 @@ class OpticalFlowCalculator:
           timestep - time step in seconds for returning flow in meters per second
         '''
 
-        cv.CvtColor(frame, self.gray, cv.CV_BGR2GRAY)
+        cv.Resize(frame, self.frame2)
+
+        cv.CvtColor(self.frame2, self.gray, cv.CV_BGR2GRAY)
 
         cv.CalcOpticalFlowFarneback(self.prev_gray, self.gray, self.flow)
 
         xsum, ysum = 0,0
         
-        for y in range(0, self.flow.height, self.mv_step):
+        for y in range(0, self.flow.height, self.move_step):
 
-            for x in range(0, self.flow.width, self.mv_step):
+            for x in range(0, self.flow.width, self.move_step):
 
                 fx, fy = self.flow[y, x]
                 xsum += fx
                 ysum += fy
 
-                cv.Line(frame, (x,y), (int(x+fx),int(y+fy)), self.mv_color_bgr)
-                cv.Circle(frame, (x,y), 1, self.mv_color_bgr, -1)
+                cv.Line(self.frame2, (x,y), (int(x+fx),int(y+fy)), self.mv_color_bgr)
+                cv.Circle(self.frame2, (x,y), 1, self.mv_color_bgr, -1)
 
         if self.window_name:
-            cv.ShowImage(self.window_name, frame)
+            cv.ShowImage(self.window_name, self.frame2)
             if cv.WaitKey(1) & 0x000000FF== 27: # ESC
                 return None
 
@@ -138,7 +143,7 @@ class OpticalFlowCalculator:
 
     def _get_velocity(self, sum_velocity_pixels, dimsize_pixels, distance_meters, timestep_seconds):
 
-        count =  (self.flow.height * self.flow.width) / self.mv_step**2
+        count =  (self.flow.height * self.flow.width) / self.move_step**2
 
         average_velocity_pixels_per_second = sum_velocity_pixels / count / timestep_seconds
 
@@ -161,6 +166,7 @@ if __name__=="__main__":
     parser.add_option("-f", "--file",  dest="filename", help="Read from video file", metavar="FILE")
     parser.add_option("-s", "--scaledown", dest="scaledown", help="Fractional image scaling", metavar="SCALEDOWN")
     parser.add_option("-c", "--camera", dest="camera", help="Camera number", metavar="CAMERA")
+    parser.add_option("-m", "--movestep", dest="movestep", help="Move step (pixels)", metavar="MOVESTEP")
 
     (options, _) = parser.parse_args()
 
@@ -173,13 +179,9 @@ if __name__=="__main__":
 
     scaledown = int(options.scaledown) if options.scaledown else 0
 
-    width  >>= scaledown
-    height >>= scaledown
+    movestep = int(options.movestep) if options.movestep else 16
 
-    cv.SetCaptureProperty( capture, cv.CV_CAP_PROP_FRAME_WIDTH, width );
-    cv.SetCaptureProperty( capture, cv.CV_CAP_PROP_FRAME_HEIGHT, height );
-
-    flow = OpticalFlowCalculator(width, height, window_name='Optical Flow') 
+    flow = OpticalFlowCalculator(width, height, window_name='Optical Flow', scaledown=scaledown, move_step=movestep) 
     start_sec = time.time()
     count = 0
 
