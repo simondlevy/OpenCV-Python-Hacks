@@ -5,11 +5,11 @@ optical_flow.py - Optical-flow velocity calculation and display using OpenCV
 
     To test:
 
-      % optical_flow               # video from webcam
-      % optical_flow -f FILENAME   # video from file
-      % optical_flow -c CAMERA     # specific camera number
-      % optical_flow -s N          # scale-down factor for flow image
-      % optical_flow -m M          # move step in pixels
+      % python optical_flow.py               # video from webcam
+      % python optical_flow.py -f FILENAME   # video from file
+      % python optical_flow.py -c CAMERA     # specific camera number
+      % python optical_flow.py -s N          # scale-down factor for flow image
+      % python optical_flow.py -m M          # move step in pixels
 
     Adapted from 
  
