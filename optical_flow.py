@@ -28,7 +28,9 @@ optical_flow.py - Optical-flow velocity calculation and display using OpenCV
     GNU General Public License for more details.
 '''
 
-import cv
+import cv2
+import numpy as np
+
 import time
 import math
 import optparse
@@ -58,26 +60,9 @@ class OpticalFlowCalculator:
 
         self.window_name = window_name
         
-        if window_name:
-            cv.NamedWindow(window_name, 1 )
+        self.size = (int(frame_width/scaledown), int(frame_height/scaledown))
 
-        size = (frame_width, frame_height)
-
-        self.bgrbytes = bytearray(frame_width*frame_height * 3)
-        self.image = cv.CreateImage(size, cv.IPL_DEPTH_8U, 3)
-
-        frame_width  = int(frame_width/scaledown)
-        frame_height = int(frame_height/scaledown)
-
-        size = (frame_width, frame_height)
-        self.frame2 = cv.CreateImage(size, cv.IPL_DEPTH_8U, 3)
-
-        self.gray = cv.CreateImage(size, 8, 1)
-        self.flow = cv.CreateImage(size, 32, 2)
-        self.prev_gray = cv.CreateImage(size, 8, 1)
-
-        self.frame_width = frame_width
-
+        self.prev_gray = None
         self.prev_time = None
 
     def processBytes(self, rgb_bytes, distance=None, timestep=1):
@@ -90,13 +75,9 @@ class OpticalFlowCalculator:
           timestep - time step in seconds for returning flow in meters per second
          '''
 
-        self.bgrbytes[0::3] = rgb_bytes[2::3]
-        self.bgrbytes[1::3] = rgb_bytes[1::3]
-        self.bgrbytes[2::3] = rgb_bytes[0::3]
-                        
-        cv.SetData(self.image, self.bgrbytes, self.frame_width*3)
-        
-        return self.processFrame(self.image, distance, timestep)
+        frame = np.frombuffer(rgb_bytes, np.uint8)
+        frame = np.reshape(frame, (self.size[1], self.size[0], 3))
+        return self.processFrame(frame, distance, timestep)
 
     def processFrame(self, frame, distance=None, timestep=1):
         '''
@@ -108,45 +89,51 @@ class OpticalFlowCalculator:
           timestep - time step in seconds for returning flow in meters per second
         '''
 
-        cv.Resize(frame, self.frame2)
-
-        cv.CvtColor(self.frame2, self.gray, cv.CV_BGR2GRAY)
-
-        cv.CalcOpticalFlowFarneback(self.prev_gray, self.gray, self.flow)
+        frame2 = cv2.resize(frame, self.size)
+ 
+        gray = cv2.cvtColor(frame2, cv2.cv.CV_BGR2GRAY)
 
         xsum, ysum = 0,0
+
+        xvel, yvel = 0,0
         
-        for y in range(0, self.flow.height, self.move_step):
+        if self.prev_gray != None:
 
-            for x in range(0, self.flow.width, self.move_step):
+            flow = cv2.calcOpticalFlowFarneback(self.prev_gray, gray, pyr_scale=0.5, levels=5, winsize=13, iterations=10, poly_n=5, poly_sigma=1.1, flags=0) 
 
-                fx, fy = self.flow[y, x]
-                xsum += fx
-                ysum += fy
+            for y in range(0, flow.shape[0], self.move_step):
 
-                cv.Line(self.frame2, (x,y), (int(x+fx),int(y+fy)), self.mv_color_bgr)
-                cv.Circle(self.frame2, (x,y), 1, self.mv_color_bgr, -1)
+                for x in range(0, flow.shape[1], self.move_step):
+
+                    fx, fy = flow[y, x]
+                    xsum += fx
+                    ysum += fy
+
+                    cv2.line(frame2, (x,y), (int(x+fx),int(y+fy)), self.mv_color_bgr)
+                    cv2.circle(frame2, (x,y), 1, self.mv_color_bgr, -1)
+
+            # Default to system time if no timestep
+            curr_time = time.time()
+            if not timestep:
+                timestep = (curr_time - self.prev_time) if self.prev_time else 1
+            self.prev_time = curr_time
+
+            xvel = self._get_velocity(flow, xsum, flow.shape[1], distance, timestep)
+            yvel = self._get_velocity(flow, ysum, flow.shape[0], distance, timestep)
+
+        self.prev_gray = gray
 
         if self.window_name:
-            cv.ShowImage(self.window_name, self.frame2)
-            if cv.WaitKey(1) & 0x000000FF== 27: # ESC
+            cv2.imshow(self.window_name, frame2)
+            if cv2.waitKey(1) & 0x000000FF== 27: # ESC
                 return None
-
-        self.prev_gray, self.gray = self.gray, self.prev_gray        
         
-        # Default to system time if no timestep
-        curr_time = time.time()
-        if not timestep:
-            timestep = (curr_time - self.prev_time) if self.prev_time else 1
-        self.prev_time = curr_time
-
        # Normalize and divide by timestep
-        return  self._get_velocity(xsum, self.flow.width,  distance, timestep), \
-                self._get_velocity(ysum, self.flow.height, distance, timestep)
+        return  xvel, yvel
 
-    def _get_velocity(self, sum_velocity_pixels, dimsize_pixels, distance_meters, timestep_seconds):
+    def _get_velocity(self, flow, sum_velocity_pixels, dimsize_pixels, distance_meters, timestep_seconds):
 
-        count =  (self.flow.height * self.flow.width) / self.move_step**2
+        count =  (flow.shape[0] * flow.shape[1]) / self.move_step**2
 
         average_velocity_pixels_per_second = sum_velocity_pixels / count / timestep_seconds
 
@@ -175,27 +162,29 @@ if __name__=="__main__":
 
     camno = int(options.camera) if options.camera else 0
 
-    capture = cv.CaptureFromCAM(camno) if not options.filename else cv.CaptureFromFile(options.filename)
+    cap = cv2.VideoCapture(camno if not options.filename else options.filename)
 
-    width   = int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_WIDTH))
-    height  = int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_HEIGHT))
+    width    = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH))
+    height   = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT))
 
     scaledown = int(options.scaledown) if options.scaledown else 1
 
     movestep = int(options.movestep) if options.movestep else 16
 
     flow = OpticalFlowCalculator(width, height, window_name='Optical Flow', scaledown=scaledown, move_step=movestep) 
+
     start_sec = time.time()
     count = 0
-
     while True:
 
-        frame = cv.QueryFrame(capture)
+        success, frame = cap.read()
 
         count += 1
             
-        if not frame:
+        if not success:
             break
+
+        print(frame.shape)
 
         result = flow.processFrame(frame)
 
@@ -205,4 +194,4 @@ if __name__=="__main__":
     elapsed_sec = time.time() - start_sec
 
     print('%dx%d image: %d frames in %3.3f sec = %3.3f frames / sec' % 
-             (flow.frame2.width, flow.frame2.height, count, elapsed_sec, count/elapsed_sec))
+             (width/scaledown, height/scaledown, count, elapsed_sec, count/elapsed_sec))
