@@ -184,8 +184,6 @@ if __name__=="__main__":
         if not success:
             break
 
-        print(frame.shape)
-
         result = flow.processFrame(frame)
 
         if not result:
