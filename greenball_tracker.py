@@ -3,7 +3,7 @@
 '''
 Track a green ball using OpenCV.
 
-    Copyright (C) 2015 Conan Zhao Simon D. Levy
+    Copyright (C) 2015 Conan Zhao and Simon D. Levy
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as 
