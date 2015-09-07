@@ -1,19 +1,5 @@
-#!/usr/bin/env python
-
 '''
 optical_flow.py - Optical-flow velocity calculation and display using OpenCV
-
-    To test:
-
-      % python optical_flow.py               # video from webcam
-      % python optical_flow.py -f FILENAME   # video from file
-      % python optical_flow.py -c CAMERA     # specific camera number
-      % python optical_flow.py -s N          # scale-down factor for flow image
-      % python optical_flow.py -m M          # move step in pixels
-
-    Adapted from 
- 
-    https://code.ros.org/trac/opencv/browser/trunk/opencv/samples/python/fback.py?rev=2271
 
     Copyright (C) 2014 Simon D. Levy
 
@@ -81,7 +67,7 @@ class OpticalFlowCalculator:
 
     def processFrame(self, frame, distance=None, timestep=1):
         '''
-        Processes one image frame, returning summed X,Y flow
+        Processes one image frame, returning summed X,Y flow and frame.
 
         Optional inputs are:
 
@@ -129,7 +115,7 @@ class OpticalFlowCalculator:
                 return None
         
        # Normalize and divide by timestep
-        return  xvel, yvel
+        return  xvel, yvel, frame2
 
     def _get_velocity(self, flow, sum_velocity_pixels, dimsize_pixels, distance_meters, timestep_seconds):
 
