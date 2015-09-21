@@ -17,15 +17,24 @@ GNU General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this code. If not, see <http://www.gnu.org/licenses/>.
 '''
+
+NOISEMAG = .1
+
 from pylab import *
+from numpy.random import rand
 
-t = arange(0.0, 2.0, 0.01)
-s = sin(2*pi*t)
-plot(t, s)
+if __name__ == '__main__':
 
-xlabel('time (s)')
-ylabel('voltage (mV)')
-title('About as simple as it gets, folks')
-grid(True)
-savefig("test.png")
-show()
+    t = arange(0.0, 2.0, 0.01)
+    noise = NOISEMAG * (2 * rand(len(t)) - 1)
+    s = sin(2*pi*t)
+    s_noisy = s + noise
+    plot(t, s)
+    plot(t, s+noise)
+
+    xlabel('time (s)')
+    ylabel('voltage (mV)')
+    title('1D Kalman Filtering Example')
+    legend(['Original', 'Noisy'])
+    grid(True)
+    show()
