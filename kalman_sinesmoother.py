@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this code. If not, see <http://www.gnu.org/licenses/>.
 '''
 
-NOISEMAG = .1
+NOISEMAG = .3
 
 from pylab import *
 from numpy.random import rand

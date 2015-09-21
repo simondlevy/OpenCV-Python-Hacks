@@ -33,7 +33,7 @@ import cv2
 import numpy as np
 from sys import exit
 
-from kalman2d import Kalman2D
+from kalman2d import Kalman2D as Kalman
 
 class MouseInfo(object):
     '''
@@ -116,8 +116,8 @@ if __name__ == '__main__':
     measured_points = []
     kalman_points = []
 
-    # Create a new Kalman2D filter and initialize it with starting mouse location
-    kalman2d = Kalman2D()
+    # Create a new Kalman filter and initialize it with starting mouse location
+    kalfilt = Kalman()
 
     # Loop till user hits escape
     while True:
@@ -130,10 +130,10 @@ if __name__ == '__main__':
         measured_points.append(measured)
 
         # Update the Kalman filter with the mouse point
-        kalman2d.update(mouse_info.x, mouse_info.y)
+        kalfilt.update(mouse_info.x, mouse_info.y)
 
         # Get the current Kalman estimate and add it to the trajectory
-        estimated = [int (c) for c in kalman2d.getEstimate()]
+        estimated = [int (c) for c in kalfilt.getEstimate()]
         kalman_points.append(estimated)
 
         # Display the trajectories and current points
@@ -144,5 +144,5 @@ if __name__ == '__main__':
 
         # Delay for specified interval, quitting on ESC
         cv2.imshow(WINDOW_NAME, img)
-        if cv2.waitKey(DELAY_MSEC) == 27:
+        if cv2.waitKey(DELAY_MSEC) & 0xFF == 27:
             break
