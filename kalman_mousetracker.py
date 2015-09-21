@@ -34,6 +34,7 @@ import numpy as np
 from sys import exit
 
 from kalman2d import Kalman2D as Kalman
+from breezykalman import BreezyKalman as Kalman
 
 class MouseInfo(object):
     '''
@@ -117,7 +118,7 @@ if __name__ == '__main__':
     kalman_points = []
 
     # Create a new Kalman filter and initialize it with starting mouse location
-    kalfilt = Kalman()
+    kalfilt = Kalman(2)
 
     # Loop till user hits escape
     while True:
@@ -130,7 +131,7 @@ if __name__ == '__main__':
         measured_points.append(measured)
 
         # Update the Kalman filter with the mouse point
-        kalfilt.update(mouse_info.x, mouse_info.y)
+        kalfilt.update((mouse_info.x, mouse_info.y))
 
         # Get the current Kalman estimate and add it to the trajectory
         estimated = [int (c) for c in kalfilt.getEstimate()]

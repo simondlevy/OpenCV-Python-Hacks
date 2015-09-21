@@ -49,7 +49,7 @@ class Kalman2D(object):
         cv.SetIdentity(self.kalman.error_cov_post, cv.RealScalar(errorCovariancePost))
 
         self.predicted = None
-        self.esitmated = None
+        self.corrected = None
 
     def update(self, x, y):
         '''

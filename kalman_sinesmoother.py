@@ -23,7 +23,7 @@ NOISEMAG = .3
 from pylab import *
 from numpy.random import rand
 
-from kalman1d import Kalman1D
+from breezykalman import BreezyKalman
 
 if __name__ == '__main__':
 
@@ -34,11 +34,11 @@ if __name__ == '__main__':
 
     s_filtered = zeros(t.shape)
 
-    kalfilt = Kalman1D()
+    kalfilt = BreezyKalman(1)
 
     for k in range(len(t)):
-        kalfilt.update(s_noisy[k])
-        s_filtered[k] = kalfilt.getEstimate()
+        kalfilt.update([s_noisy[k]])
+        s_filtered[k] = kalfilt.getEstimate()[0]
 
     plot(t, s)
     plot(t, s_noisy)

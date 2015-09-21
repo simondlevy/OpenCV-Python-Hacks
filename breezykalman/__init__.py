@@ -27,14 +27,14 @@ class BreezyKalman(object):
 
     def __init__(self, dims, processNoiseCovariance=1e-4, measurementNoiseCovariance=1e-1, errorCovariancePost=0.1):
         '''
-        Constructs a new Kalman2D object.  
+        Constructs a new BreezyKalman object with specified number of input/output dimensions
         For explanation of the error covariances see
         http://en.wikipedia.org/wiki/Kalman_filter
         '''
 
         self.dims = dims
 
-        self.kalman = cv.CreateKalman(dims*2, 2, 0)
+        self.kalman = cv.CreateKalman(dims*2, dims, 0)
         self.kalman_state = cv.CreateMat(dims*2, 1, cv.CV_32FC1)
         self.kalman_process_noise = cv.CreateMat(dims*2, 1, cv.CV_32FC1)
         self.kalman_measurement = cv.CreateMat(dims, 1, cv.CV_32FC1)
@@ -51,7 +51,7 @@ class BreezyKalman(object):
         cv.SetIdentity(self.kalman.error_cov_post, cv.RealScalar(errorCovariancePost))
 
         self.predicted = None
-        self.esitmated = None
+        self.corrected = None
 
     def update(self, obs):
         '''
@@ -69,11 +69,11 @@ class BreezyKalman(object):
         Returns the current X,Y estimate.
         '''
 
-        return self.corrected[:,0]
+        return [self.corrected[k,0] for k in range(self.dims)]
 
     def getPrediction(self):
         '''
         Returns the current X,Y prediction.
         '''
 
-        return self.predicted[:,0]
+        return [self.predicted[k,0] for k in range(self.dims)]
