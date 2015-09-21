@@ -59,6 +59,7 @@ class Kalman1D(object):
         '''
 
         self.x = x
+        return
 
         self.kalman_measurement[0, 0] = x
 

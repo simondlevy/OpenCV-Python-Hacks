@@ -23,13 +23,23 @@ NOISEMAG = .1
 from pylab import *
 from numpy.random import rand
 
+from kalman1d import Kalman1D
+
 if __name__ == '__main__':
 
     t = arange(0.0, 2.0, 0.01)
     noise = NOISEMAG * (2 * rand(len(t)) - 1)
     s = sin(2*pi*t)
     s_noisy = s + noise
+
     s_filtered = zeros(t.shape)
+
+    kalfilt = Kalman1D()
+
+    for k in range(len(t)):
+        kalfilt.update(s_noisy[k])
+        s_filtered[k] = kalfilt.getEstimate()
+
     plot(t, s)
     plot(t, s_noisy)
     plot(t, s_filtered)
