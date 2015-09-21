@@ -32,15 +32,13 @@ class Kalman1D(object):
         http://en.wikipedia.org/wiki/Kalman_filter
         '''
 
-        return
+        self.kalman = cv.CreateKalman(2, 1, 0)
+        self.kalman_state = cv.CreateMat(2, 1, cv.CV_32FC1)
+        self.kalman_process_noise = cv.CreateMat(2, 1, cv.CV_32FC1)
+        self.kalman_measurement = cv.CreateMat(1, 1, cv.CV_32FC1)
 
-        self.kalman = cv.CreateKalman(4, 2, 0)
-        self.kalman_state = cv.CreateMat(4, 1, cv.CV_32FC1)
-        self.kalman_process_noise = cv.CreateMat(4, 1, cv.CV_32FC1)
-        self.kalman_measurement = cv.CreateMat(2, 1, cv.CV_32FC1)
-
-        for j in range(4):
-            for k in range(4):
+        for j in range(2):
+            for k in range(2):
                 self.kalman.transition_matrix[j,k] = 0
             self.kalman.transition_matrix[j,j] = 1
 
@@ -58,10 +56,7 @@ class Kalman1D(object):
         Updates the filter with a new X,Y measurement
         '''
 
-        self.x = x
-        return
-
-        self.kalman_measurement[0, 0] = x
+        self.kalman_measurement[0,0] = x
 
         self.predicted = cv.KalmanPredict(self.kalman)
         self.corrected = cv.KalmanCorrect(self.kalman, self.kalman_measurement)
@@ -71,15 +66,11 @@ class Kalman1D(object):
         Returns the current X,Y estimate.
         '''
 
-        return self.x
-
         return self.corrected[0,0]
 
     def getPrediction(self):
         '''
         Returns the current X,Y prediction.
         '''
-
-        return self.x
 
         return self.predicted[0,0]
