@@ -19,7 +19,7 @@ along with this code.  If not, see <http:#www.gnu.org/licenses/>.
 from distutils.core import setup
 
 setup (name = 'OpenCV-Python-Hacks',
-       packages = ['optical_flow', 'kalman2d'],
+       packages = ['optical_flow', 'breezykalman'],
        requires = ['cv', 'cv2'],
        version = '0.1',
        description = 'Simple shortcuts for OpenCV functionality',
