@@ -29,12 +29,14 @@ if __name__ == '__main__':
     noise = NOISEMAG * (2 * rand(len(t)) - 1)
     s = sin(2*pi*t)
     s_noisy = s + noise
+    s_filtered = zeros(t.shape)
     plot(t, s)
-    plot(t, s+noise)
+    plot(t, s_noisy)
+    plot(t, s_filtered)
 
     xlabel('time (s)')
     ylabel('voltage (mV)')
     title('1D Kalman Filtering Example')
-    legend(['Original', 'Noisy'])
+    legend(['Original', 'Noisy', 'Filtered'])
     grid(True)
     show()
