@@ -66,14 +66,19 @@ class BreezyKalman(object):
 
     def getEstimate(self):
         '''
-        Returns the current X,Y estimate.
+        Returns the current estimate as a tuple.
         '''
 
-        return [self.corrected[k,0] for k in range(self.dims)]
+        return self._get(self.corrected)
 
     def getPrediction(self):
         '''
-        Returns the current X,Y prediction.
+        Returns the current prediction as a tuple.
         '''
 
-        return [self.predicted[k,0] for k in range(self.dims)]
+        return self._get(self.predicted)
+
+    def _get(self, stuff):
+
+
+        return tuple([stuff[k,0] for k in range(self.dims)])
