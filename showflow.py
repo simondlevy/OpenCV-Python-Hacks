@@ -5,11 +5,11 @@ showflow.py - Optical-flow demonstrations
 
     To test:
 
-      % python optical_flow.py               # video from webcam
-      % python optical_flow.py -f FILENAME   # video from file
-      % python optical_flow.py -c CAMERA     # specific camera number
-      % python optical_flow.py -s N          # scale-down factor for flow image
-      % python optical_flow.py -m M          # move step in pixels
+      % python showflow.py               # video from webcam
+      % python showflow.py -f FILENAME   # video from file
+      % python showflow.py -c CAMERA     # specific camera number
+      % python showflow.py -s N          # scale-down factor for flow image
+      % python showflow.py -m M          # move step in pixels
 
     Adapted from 
  
