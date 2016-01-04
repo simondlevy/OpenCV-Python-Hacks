@@ -33,7 +33,6 @@ import cv2
 import numpy as np
 from sys import exit
 
-from kalman2d import Kalman2D as Kalman
 from breezykalman import BreezyKalman as Kalman
 
 class MouseInfo(object):
