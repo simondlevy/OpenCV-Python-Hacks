@@ -50,35 +50,16 @@ class BreezyKalman(object):
         cv.SetIdentity(self.kalman.measurement_noise_cov, cv.RealScalar(measurementNoiseCovariance))
         cv.SetIdentity(self.kalman.error_cov_post, cv.RealScalar(errorCovariancePost))
 
-        self.predicted = None
-        self.corrected = None
-
-    def update(self, obs):
+    def step(self, obs):
         '''
-        Updates the filter with a new observation
+        Runs one pass of the filter prediction/update, returning a new state estimate.
         '''
 
         for k in range(self.dims):
             self.kalman_measurement[k,0] = obs[k]
 
-        self.predicted = cv.KalmanPredict(self.kalman)
-        self.corrected = cv.KalmanCorrect(self.kalman, self.kalman_measurement)
+        cv.KalmanPredict(self.kalman)
 
-    def getEstimate(self):
-        '''
-        Returns the current estimate as a tuple.
-        '''
+        estimated = cv.KalmanCorrect(self.kalman, self.kalman_measurement)
 
-        return self._get(self.corrected)
-
-    def getPrediction(self):
-        '''
-        Returns the current prediction as a tuple.
-        '''
-
-        return self._get(self.predicted)
-
-    def _get(self, stuff):
-
-
-        return tuple([stuff[k,0] for k in range(self.dims)])
+        return tuple([estimated[k,0] for k in range(self.dims)])

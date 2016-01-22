@@ -37,8 +37,7 @@ if __name__ == '__main__':
     kalfilt = BreezyKalman(1)
 
     for k in range(len(t)):
-        kalfilt.update([s_noisy[k]])
-        s_filtered[k] = kalfilt.getEstimate()[0]
+        s_filtered[k] = kalfilt.step([s_noisy[k]])[0]
 
     plot(t, s)
     plot(t, s_noisy)
