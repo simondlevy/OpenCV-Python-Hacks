@@ -116,8 +116,8 @@ if __name__ == '__main__':
     measured_points = []
     kalman_points = []
 
-    # Create a new Kalman filter and initialize it with starting mouse location
-    kalfilt = Kalman(2)
+    # Create a new Kalman filter with four state values and two measurement values
+    kalfilt = Kalman(4, 2)
 
     # Loop till user hits escape
     while True:

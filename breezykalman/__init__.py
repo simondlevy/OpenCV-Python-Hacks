@@ -25,22 +25,23 @@ class BreezyKalman(object):
     A class for easy Kalman filtering
     '''
 
-    def __init__(self, dims, processNoiseCovariance=1e-4, measurementNoiseCovariance=1e-1, errorCovariancePost=0.1):
+    def __init__(self, n, m, processNoiseCovariance=1e-4, measurementNoiseCovariance=1e-1, errorCovariancePost=0.1):
         '''
-        Constructs a new BreezyKalman object with specified number of input/output dimensions
+        Constructs a new BreezyKalman object with specified number of state and measurement dimensions.
         For explanation of the error covariances see
         http://en.wikipedia.org/wiki/Kalman_filter
         '''
 
-        self.dims = dims
+        self.n = n
+        self.m = m
 
-        self.kalman = cv.CreateKalman(dims*2, dims, 0)
-        self.kalman_state = cv.CreateMat(dims*2, 1, cv.CV_32FC1)
-        self.kalman_process_noise = cv.CreateMat(dims*2, 1, cv.CV_32FC1)
-        self.kalman_measurement = cv.CreateMat(dims, 1, cv.CV_32FC1)
+        self.kalman = cv.CreateKalman(n, m, 0)
+        self.kalman_state = cv.CreateMat(n, 1, cv.CV_32FC1)
+        self.kalman_process_noise = cv.CreateMat(n, 1, cv.CV_32FC1)
+        self.kalman_measurement = cv.CreateMat(m, 1, cv.CV_32FC1)
 
-        for j in range(dims*2):
-            for k in range(dims*2):
+        for j in range(n):
+            for k in range(n):
                 self.kalman.transition_matrix[j,k] = 0
             self.kalman.transition_matrix[j,j] = 1
 
@@ -55,11 +56,11 @@ class BreezyKalman(object):
         Runs one pass of the filter prediction/update, returning a new state estimate.
         '''
 
-        for k in range(self.dims):
+        for k in range(self.m):
             self.kalman_measurement[k,0] = obs[k]
 
         cv.KalmanPredict(self.kalman)
 
         estimated = cv.KalmanCorrect(self.kalman, self.kalman_measurement)
 
-        return tuple([estimated[k,0] for k in range(self.dims)])
+        return tuple([estimated[k,0] for k in range(self.m)])

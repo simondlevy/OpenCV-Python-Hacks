@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     s_filtered = zeros(t.shape)
 
-    kalfilt = BreezyKalman(1)
+    kalfilt = BreezyKalman(2, 1)
 
     for k in range(len(t)):
         s_filtered[k] = kalfilt.step([s_noisy[k]])[0]
