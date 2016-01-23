@@ -1,4 +1,4 @@
 OpenCV-Python-Hacks
 ===================
 
-Python Kalman filter, object tracking, etc. in OpenCV
+Python object tracking and optical flow in OpenCV.
