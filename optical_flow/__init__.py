@@ -114,7 +114,7 @@ class OpticalFlowCalculator:
             if cv2.waitKey(1) & 0x000000FF== 27: # ESC
                 return None
         
-       # Normalize and divide by timestep
+        # Return x,y velocities and new image with flow lines
         return  xvel, yvel, frame2
 
     def _get_velocity(self, flow, sum_velocity_pixels, dimsize_pixels, distance_meters, timestep_seconds):
