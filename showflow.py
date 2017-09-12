@@ -52,8 +52,8 @@ if __name__=="__main__":
 
     cap = cv2.VideoCapture(camno if not options.filename else options.filename)
 
-    width    = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH))
-    height   = int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT))
+    width    = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height   = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     scaledown = int(options.scaledown) if options.scaledown else 1
 

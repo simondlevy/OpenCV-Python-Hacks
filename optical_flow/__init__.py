@@ -77,15 +77,17 @@ class OpticalFlowCalculator:
 
         frame2 = cv2.resize(frame, self.size)
  
-        gray = cv2.cvtColor(frame2, cv2.cv.CV_BGR2GRAY)
+        gray = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
 
         xsum, ysum = 0,0
 
         xvel, yvel = 0,0
-        
-        if self.prev_gray != None:
 
-            flow = cv2.calcOpticalFlowFarneback(self.prev_gray, gray, pyr_scale=0.5, levels=5, winsize=13, iterations=10, poly_n=5, poly_sigma=1.1, flags=0) 
+        flow = None
+        
+        if not self.prev_gray is None:
+
+            flow = cv2.calcOpticalFlowFarneback(self.prev_gray, gray, flow, pyr_scale=0.5, levels=5, winsize=13, iterations=10, poly_n=5, poly_sigma=1.1, flags=0) 
 
             for y in range(0, flow.shape[0], self.move_step):
 
