@@ -3,7 +3,7 @@ OpenCV-Python-Hacks
 
 Python object tracking and optical flow in OpenCV.
 
-*** Raspberry Pi tips
+## Raspberry Pi tips
 To install OpenCV under Python3 on RaspberryPi, I ran the following commands:
 
 ~~~~
