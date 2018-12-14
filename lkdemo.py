@@ -56,7 +56,7 @@ while True:
     p1, st, err = cv.calcOpticalFlowPyrLK(old_gray, frame_gray, p0, None, **lk_params)
 
     # If no flow, look for new points
-    if p0 is None or p1 is None:
+    if p1 is None:
 
         old_gray = cv.cvtColor(old_frame, cv.COLOR_BGR2GRAY)
         p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)        
@@ -89,6 +89,6 @@ while True:
     if (cv.waitKey(1) & 0xff) == 27:
         break
        
-
+# Shut down
 cv.destroyAllWindows()
 cap.release()
