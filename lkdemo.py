@@ -59,7 +59,11 @@ while True:
     if p1 is None:
 
         old_gray = cv.cvtColor(old_frame, cv.COLOR_BGR2GRAY)
+        
         p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)        
+
+        # Get rid of old lines
+        mask = np.zeros_like(old_frame)
 
         cv.imshow('frame',frame)
 
