@@ -52,42 +52,43 @@ while True:
 
     frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
-    # calculate optical flow
+    # Calculate optical flow
     p1, st, err = cv.calcOpticalFlowPyrLK(old_gray, frame_gray, p0, None, **lk_params)
 
+    # If no flow, look for new points
     if p0 is None or p1 is None:
 
         old_gray = cv.cvtColor(old_frame, cv.COLOR_BGR2GRAY)
         p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)        
 
         cv.imshow('frame',frame)
-        k = cv.waitKey(30) & 0xff
-        if k == 27:
-            break        
 
+    # Otherwise, show flow
     else:
 
         # Select good points
         good_new = p1[st==1]
         good_old = p0[st==1]
 
-        # draw the tracks
+        # Draw the tracks
         for i,(new,old) in enumerate(zip(good_new,good_old)):
             a,b = new.ravel()
             c,d = old.ravel()
             mask = cv.line(mask, (a,b),(c,d), color[i].tolist(), 2)
             frame = cv.circle(frame,(a,b),5,color[i].tolist(),-1)
 
-
+        # Display the image with the flow lines
         img = cv.add(frame,mask)
         cv.imshow('frame',img)
-        k = cv.waitKey(30) & 0xff
-        if k == 27:
-            break
 
-        # Now update the previous frame and previous points
+        # Update the previous frame and previous points
         old_gray = frame_gray.copy()
         p0 = good_new.reshape(-1,1,2)
+
+    # For display, quitting on ESC
+    if (cv.waitKey(1) & 0xff) == 27:
+        break
+       
 
 cv.destroyAllWindows()
 cap.release()
