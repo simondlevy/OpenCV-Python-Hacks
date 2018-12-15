@@ -27,20 +27,6 @@
 using namespace cv;
 using namespace std;
 
-static void help()
-{
-    // print a welcome message, and the OpenCV version
-    cout << "\nThis is a demo of Lukas-Kanade optical flow lkdemo(),\n"
-            "Using OpenCV version " << CV_VERSION << endl;
-    cout << "\nIt uses camera by default, but you can provide a path to video as an argument.\n";
-    cout << "\nHot keys: \n"
-            "\tESC - quit the program\n"
-            "\tr - auto-initialize tracking\n"
-            "\tc - delete all the points\n"
-            "\tn - switch the \"night\" mode on/off\n"
-            "To add/remove a feature point click it\n" << endl;
-}
-
 Point2f point;
 bool addRemovePt = false;
 
@@ -63,7 +49,6 @@ int main( int argc, char** argv )
     bool needToInit = false;
     bool nightMode = false;
 
-    help();
     cv::CommandLineParser parser(argc, argv, "{@input|0|}");
     string input = parser.get<string>("@input");
 
