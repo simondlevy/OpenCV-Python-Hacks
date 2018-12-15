@@ -38,7 +38,6 @@ int main( int argc, char** argv )
 
     const int MAX_COUNT = 500;
     bool needToInit = false;
-    bool nightMode = false;
 
     cv::CommandLineParser parser(argc, argv, "{@input|0|}");
     string input = parser.get<string>("@input");
@@ -67,9 +66,6 @@ int main( int argc, char** argv )
 
         frame.copyTo(image);
         cvtColor(image, gray, COLOR_BGR2GRAY);
-
-        if( nightMode )
-            image = Scalar::all(0);
 
         if( needToInit )
         {
@@ -131,9 +127,6 @@ int main( int argc, char** argv )
         case 'c':
             points[0].clear();
             points[1].clear();
-            break;
-        case 'n':
-            nightMode = !nightMode;
             break;
         }
 
