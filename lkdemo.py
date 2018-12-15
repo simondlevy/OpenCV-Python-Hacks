@@ -89,7 +89,7 @@ while True:
         old_gray = frame_gray.copy()
         p0 = good_new.reshape(-1,1,2)
 
-    # For display, quitting on ESC
+    # Force display, quitting on ESC
     if (cv.waitKey(1) & 0xff) == 27:
         break
        

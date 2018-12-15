@@ -1,20 +1,20 @@
 /*
    lkdemo.cpp - simple C++ demo of Lucas-Kanade optical flow
 
- Copyright (C) 2018 Simon D. Levy
+   Copyright (C) 2018 Simon D. Levy
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as 
- published by the Free Software Foundation, either version 3 of the 
- License, or (at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as 
+   published by the Free Software Foundation, either version 3 of the 
+   License, or (at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-Requires: OpenCV
-*/
+   Requires: OpenCV
+ */
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -33,14 +33,16 @@ int main(int argc, char** argv)
 
     while (true) {
 
-          Mat frame;
-          cap >> frame;
-          if( frame.empty() ) break; // end of video stream
-          imshow("this is you, smile! :)", frame);
-          if( waitKey(10) == 27 ) break; // stop capturing by pressing ESC 
+        Mat frame;
+        cap >> frame;
+
+        imshow("frame)", frame);
+
+        // Force display, quitting on ESC
+        if( waitKey(10) == 27 ) break; // stop capturing by pressing ESC 
     }
 
-    // the camera will be closed automatically upon exit
-     cap.release();
+    // Shut down
+    cap.release();
     return 0;
 }
