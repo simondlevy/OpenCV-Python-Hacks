@@ -33,10 +33,16 @@ int main(int argc, char** argv)
 
     while (true) {
 
+        // Capture a frame
         Mat frame;
         cap >> frame;
 
-        imshow("frame)", frame);
+        // Convert it to grayscale
+        Mat frame_gray;
+        cvtColor(frame, frame_gray, COLOR_BGR2GRAY);
+
+        // Display the frame with the flow lines
+        imshow("frame)", frame_gray);
 
         // Force display, quitting on ESC
         if( waitKey(1) == 27 ) {

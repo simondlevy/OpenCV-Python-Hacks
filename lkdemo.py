@@ -48,8 +48,10 @@ mask = np.zeros_like(old_frame)
 
 while True:
 
+    # Capture a frame
     ret,frame = cap.read()
 
+    # Convert it to grayscale
     frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
     # Calculate optical flow
