@@ -45,6 +45,7 @@ int main(int argc, char** argv)
     }
 
     // Shut down
+    destroyAllWindows();
     cap.release();
     return 0;
 }
