@@ -27,14 +27,15 @@
 using namespace cv;
 using namespace std;
 
+static const char * WINDOW_NAME = "frame";
+
 Point2f point;
 bool addRemovePt = false;
 
 int main( int argc, char** argv )
 {
-    VideoCapture cap;
-
     // Use camera for capture
+    VideoCapture cap;
     if(!cap.open(0)) {
         return 0;
     }
@@ -45,17 +46,18 @@ int main( int argc, char** argv )
     const int MAX_COUNT = 500;
     bool needToInit = false;
 
-
-    namedWindow( "LK Demo", 1 );
+    namedWindow( WINDOW_NAME, 1 );
 
     Mat gray, prevGray, image, frame;
     vector<Point2f> points[2];
 
-    for(;;)
-    {
+    while (true) {
+
+        // Capture a frame
         cap >> frame;
-        if( frame.empty() )
+        if(frame.empty()) {
             break;
+        }
 
         frame.copyTo(image);
         cvtColor(image, gray, COLOR_BGR2GRAY);
@@ -63,7 +65,6 @@ int main( int argc, char** argv )
         if( needToInit )
         {
             // automatic initialization
-            //goodFeaturesToTrack(gray, points[1], MAX_COUNT, 0.01, 10, Mat(), 3, 3, 0, 0.04);
             goodFeaturesToTrack(gray, points[1], MAX_COUNT, 0.01, 10);
             cornerSubPix(gray, points[1], subPixWinSize, Size(-1,-1), termcrit);
             addRemovePt = false;
@@ -107,7 +108,7 @@ int main( int argc, char** argv )
         }
 
         needToInit = false;
-        imshow("LK Demo", image);
+        imshow(WINDOW_NAME, image);
 
         char c = (char)waitKey(10);
         if( c == 27 )
