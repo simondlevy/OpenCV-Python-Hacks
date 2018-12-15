@@ -25,8 +25,7 @@ int main(int argc, char** argv)
 {
     VideoCapture cap;
 
-    // open the default camera, use something different from 0 otherwise;
-    // Check VideoCapture documentation.
+    // Use camera for capture
     if(!cap.open(0)) {
         return 0;
     }
