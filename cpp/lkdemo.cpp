@@ -30,6 +30,13 @@ int main(int argc, char** argv)
         return 0;
     }
 
+    // Take first frame and find corners in it
+    Mat old_frame;
+    cap >> old_frame;
+    Mat old_gray;
+    cvtColor(old_frame, old_gray, COLOR_BGR2GRAY);
+    //p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params);
+
     while (true) {
 
         // Capture a frame
