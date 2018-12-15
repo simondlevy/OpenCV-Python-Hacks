@@ -30,15 +30,6 @@ using namespace std;
 Point2f point;
 bool addRemovePt = false;
 
-static void onMouse( int event, int x, int y, int /*flags*/, void* /*param*/ )
-{
-    if( event == EVENT_LBUTTONDOWN )
-    {
-        point = Point2f((float)x, (float)y);
-        addRemovePt = true;
-    }
-}
-
 int main( int argc, char** argv )
 {
     VideoCapture cap;
@@ -64,7 +55,6 @@ int main( int argc, char** argv )
     }
 
     namedWindow( "LK Demo", 1 );
-    setMouseCallback( "LK Demo", onMouse, 0 );
 
     Mat gray, prevGray, image, frame;
     vector<Point2f> points[2];
