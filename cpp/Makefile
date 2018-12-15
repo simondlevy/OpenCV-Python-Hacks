@@ -16,6 +16,9 @@
 
 all: lkdemo
 
+run: lkdemo
+	./lkdemo
+
 lkdemo: lkdemo.o 
 	g++  -g -o lkdemo  lkdemo.o `pkg-config opencv --libs`
 
