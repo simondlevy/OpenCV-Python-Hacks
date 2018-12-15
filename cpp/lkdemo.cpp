@@ -39,7 +39,9 @@ int main(int argc, char** argv)
         imshow("frame)", frame);
 
         // Force display, quitting on ESC
-        if( waitKey(10) == 27 ) break; // stop capturing by pressing ESC 
+        if( waitKey(1) == 27 ) {
+            break; 
+        }
     }
 
     // Shut down
