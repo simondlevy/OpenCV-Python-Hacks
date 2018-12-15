@@ -40,7 +40,7 @@ lk_params = dict( winSize  = (15,15),
 color = np.random.randint(0,255,(100,3))
 
 # Take first frame and find corners in it
-ret, old_frame = cap.read()
+_, old_frame = cap.read()
 old_gray = cv.cvtColor(old_frame, cv.COLOR_BGR2GRAY)
 p0 = cv.goodFeaturesToTrack(old_gray, mask = None, **feature_params)
 
@@ -50,7 +50,7 @@ mask = np.zeros_like(old_frame)
 while True:
 
     # Capture a frame
-    ret,frame = cap.read()
+    _,frame = cap.read()
 
     # Convert it to grayscale
     frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
