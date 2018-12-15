@@ -4,3 +4,4 @@ build
 *.swp
 *.o
 cpp/lkdemo
+cpp/lkdemo2

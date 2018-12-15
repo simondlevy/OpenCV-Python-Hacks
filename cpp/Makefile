@@ -14,7 +14,7 @@
 #
 # Requires: OpenCV
 
-all: lkdemo
+all: lkdemo lkdemo2
 
 run: lkdemo
 	./lkdemo
@@ -25,5 +25,11 @@ lkdemo: lkdemo.o
 lkdemo.o: lkdemo.cpp 
 	g++  -Wall -c lkdemo.cpp  `pkg-config opencv --cflags`
 
+lkdemo2: lkdemo2.o 
+	g++  -g -o lkdemo2  lkdemo2.o `pkg-config opencv --libs`
+
+lkdemo2.o: lkdemo2.cpp 
+	g++  -Wall -c lkdemo2.cpp  `pkg-config opencv --cflags`
+
 clean:
-	rm -rf lkdemo *.o *~ 
+	rm -rf lkdemo lkdemo2 *.o *~ 
