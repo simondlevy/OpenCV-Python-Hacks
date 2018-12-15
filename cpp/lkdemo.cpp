@@ -41,6 +41,6 @@ int main(int argc, char** argv)
     }
 
     // the camera will be closed automatically upon exit
-    // cap.close();
+     cap.release();
     return 0;
 }
