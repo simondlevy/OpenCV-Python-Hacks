@@ -33,25 +33,18 @@ bool addRemovePt = false;
 int main( int argc, char** argv )
 {
     VideoCapture cap;
+
+    // Use camera for capture
+    if(!cap.open(0)) {
+        return 0;
+    }
+
     TermCriteria termcrit(TermCriteria::COUNT|TermCriteria::EPS,20,0.03);
     Size subPixWinSize(10,10), winSize(31,31);
 
     const int MAX_COUNT = 500;
     bool needToInit = false;
 
-    cv::CommandLineParser parser(argc, argv, "{@input|0|}");
-    string input = parser.get<string>("@input");
-
-    if( input.size() == 1 && isdigit(input[0]) )
-        cap.open(input[0] - '0');
-    else
-        cap.open(input);
-
-    if( !cap.isOpened() )
-    {
-        cout << "Could not initialize capturing...\n";
-        return 0;
-    }
 
     namedWindow( "LK Demo", 1 );
 
