@@ -2,3 +2,5 @@ build
 *~
 *.pyc
 *.swp
+*.o
+cpp/lkdemo
